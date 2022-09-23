@@ -134,6 +134,22 @@ Accept: application/json
   }
 }
 
+### Aggregation - group by field districtNumber
+POST http://localhost:9200/warriors/_search
+Content-Type: application/json
+Accept: application/json
+
+{
+  "from": 0,
+  "size": 0,
+  "aggs": {
+    "group_by_district": {
+      "terms": {
+        "field": "districtNumber"
+      }
+    }
+  }
+}
 
 ### Create twitter-index - FROM ANOTHER PROJECT
 PUT http://localhost:9200/twitter-index
