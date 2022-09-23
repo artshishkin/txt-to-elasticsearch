@@ -33,7 +33,7 @@ build/
 .vscode/
 
 node_modules/
-/output/
+output/
 /OutputFiles/
 logs/
 *.log
