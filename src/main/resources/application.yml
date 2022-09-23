@@ -1,0 +1,14 @@
+logging:
+  level:
+    net.shyshkin: debug
+
+spring:
+  batch:
+    jdbc:
+      platform: mysql
+      initialize-schema: always
+  datasource:
+    url: jdbc:mysql://localhost:23306/batch_db
+    username: batch_user
+    password: batch_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
