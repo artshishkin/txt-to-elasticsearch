@@ -6,6 +6,7 @@ import net.shyshkin.war.txttoelasticsearch.listener.ZipOperationsExecutionListen
 import net.shyshkin.war.txttoelasticsearch.mapper.WarriorMapper;
 import net.shyshkin.war.txttoelasticsearch.model.WarriorDoc;
 import net.shyshkin.war.txttoelasticsearch.model.WarriorTxt;
+import net.shyshkin.war.txttoelasticsearch.writer.ElasticsearchItemWriter;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -31,6 +32,7 @@ public class BatchConfig {
     private final JobBuilderFactory jobs;
     private final StepBuilderFactory steps;
     private final WarriorMapper warriorMapper;
+    private final ElasticsearchItemWriter elasticWriter;
 
     @Bean
     Job readWarriorJob(ZipOperationsExecutionListener zipOperations) {
@@ -46,7 +48,7 @@ public class BatchConfig {
                 .<WarriorTxt, WarriorDoc>chunk(1000)
                 .reader(txtItemReader(null))
                 .processor((Function<? super WarriorTxt, ? extends WarriorDoc>) warriorMapper::toDoc)
-                .writer(list -> list.forEach(item -> log.debug("{}", item)))
+                .writer(elasticWriter)
                 .build();
     }
 
