@@ -63,7 +63,7 @@ public class BatchConfig {
                 .delimiter("\t")
                 .names("Full Name", "Birth Date", "Address", "District Number", "District Name")
                 .targetType(WarriorTxt.class)
-                .maxItemCount(10)
+//                .maxItemCount(10)
                 .build();
     }
 
