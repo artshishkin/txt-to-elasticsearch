@@ -1,0 +1,54 @@
+version: "3.8"
+
+name: txt-to-elasticsearch
+
+volumes:
+  mysql-data:
+  volume-kibana:
+  volume-elastic:
+
+services:
+  mysql:
+    image: mysql:${MYSQL_VERSION:-latest}
+    ports:
+      - '23306:3306'
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_USER: batch_user
+      MYSQL_PASSWORD: batch_password
+      MYSQL_DATABASE: batch_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql:3306
+    ports:
+      - 8081:8080
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:-latest}
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    volumes:
+      - volume-elastic:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION:-latest}
+    ports: ["5601:5601"]
+    restart: on-failure
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    volumes:
+      - volume-kibana:/usr/share/kibana
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
