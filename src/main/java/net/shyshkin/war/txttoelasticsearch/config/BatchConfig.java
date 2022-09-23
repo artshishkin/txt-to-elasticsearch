@@ -3,6 +3,8 @@ package net.shyshkin.war.txttoelasticsearch.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.war.txttoelasticsearch.listener.ZipOperationsExecutionListener;
+import net.shyshkin.war.txttoelasticsearch.mapper.WarriorMapper;
+import net.shyshkin.war.txttoelasticsearch.model.WarriorDoc;
 import net.shyshkin.war.txttoelasticsearch.model.WarriorTxt;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -18,6 +20,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
+import java.util.function.Function;
+
 @Slf4j
 @EnableBatchProcessing
 @Configuration
@@ -26,6 +30,7 @@ public class BatchConfig {
 
     private final JobBuilderFactory jobs;
     private final StepBuilderFactory steps;
+    private final WarriorMapper warriorMapper;
 
     @Bean
     Job readWarriorJob(ZipOperationsExecutionListener zipOperations) {
@@ -38,8 +43,9 @@ public class BatchConfig {
 
     private Step readWarriorDataStep() {
         return steps.get("Read Warrior Data and Save to Elasticsearch")
-                .<WarriorTxt, WarriorTxt>chunk(1000)
+                .<WarriorTxt, WarriorDoc>chunk(1000)
                 .reader(txtItemReader(null))
+                .processor((Function<? super WarriorTxt, ? extends WarriorDoc>) warriorMapper::toDoc)
                 .writer(list -> list.forEach(item -> log.debug("{}", item)))
                 .build();
     }

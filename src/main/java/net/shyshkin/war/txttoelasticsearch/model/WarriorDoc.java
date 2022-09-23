@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -26,7 +26,7 @@ public class WarriorDoc {
     @JsonProperty
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.uuuu")
     @Field(type = FieldType.Date, format = {}, pattern = "dd.MM.uuuu")
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
     private String address;
     private Long districtNumber;
     private String districtName;
