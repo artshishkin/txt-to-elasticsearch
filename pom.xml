@@ -18,6 +18,7 @@
         <zip4j.version>2.6.1</zip4j.version>
         <mapstruct.version>1.5.1.Final</mapstruct.version>
         <spring.boot.version>@parent.version@</spring.boot.version>
+        <poi.version>5.2.3</poi.version>
     </properties>
     <dependencies>
         <dependency>
@@ -45,6 +46,21 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.batch.extensions</groupId>
+            <artifactId>spring-batch-excel</artifactId>
+            <version>0.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
         </dependency>
 
         <dependency>

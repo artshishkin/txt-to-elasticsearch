@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="xlsx-to-db" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="txt-to-elasticsearch" />
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" />
+      </ENTRIES>
+    </extension>
+    <option name="SPRING_BOOT_MAIN_CLASS" value="net.shyshkin.war.txttoelasticsearch.TxtToElasticsearchApplication" />
+    <option name="ACTIVE_PROFILES" value="xlsx-to-db" />
+    <option name="PROGRAM_PARAMETERS" value="xlsxPopulationFile=data/input/Bulletin_2022_simple.xlsx" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
