@@ -55,7 +55,7 @@ public class XlsxBatchConfig {
             setName("xlsxPopulationReader");
             setResource(resource);
             setLinesToSkip(6);
-            setMaxItemCount(10);
+//            setMaxItemCount(10);
             setRowMapper(populationRowMapper());
         }};
     }
@@ -66,6 +66,9 @@ public class XlsxBatchConfig {
             String[] row = rowSet.getCurrentRow();
             String age = row[0];
             if (age.contains("80 и")) age = "80";
+            for (int i = 1; i < row.length; i++) {
+                row[i] = row[i].replace("-", "0");
+            }
             try {
                 return PopulationXlsx.builder()
                         .sheetName(rowSet.getMetaData().getSheetName())
