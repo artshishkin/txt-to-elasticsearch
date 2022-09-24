@@ -2,6 +2,7 @@ package net.shyshkin.war.txttoelasticsearch.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.shyshkin.war.txttoelasticsearch.exception.WrongAgeFormatException;
 import net.shyshkin.war.txttoelasticsearch.model.PopulationXlsx;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -42,9 +43,8 @@ public class XlsxBatchConfig {
                 .<PopulationXlsx, PopulationXlsx>chunk(100)
                 .reader(xlsxPopulationReader(null))
                 .writer(list -> list.forEach(item -> log.debug("{}", item)))
-//                .faultTolerant()
-//                .skip(FormulaParseException.class)
-//                .skipPolicy(new AlwaysSkipItemSkipPolicy())
+                .faultTolerant()
+                .skipPolicy((t, skipCount) -> t instanceof WrongAgeFormatException || t.getCause() instanceof WrongAgeFormatException)
                 .build();
     }
 
@@ -64,19 +64,25 @@ public class XlsxBatchConfig {
     RowMapper<PopulationXlsx> populationRowMapper() {
         return rowSet -> {
             String[] row = rowSet.getCurrentRow();
-            return PopulationXlsx.builder()
-                    .sheetName(rowSet.getMetaData().getSheetName())
-                    .age(row[0])
-                    .allMenWomen(Long.parseLong(row[1]))
-                    .allMen(Long.parseLong(row[2]))
-                    .allWomen(Long.parseLong(row[3]))
-                    .cityMenWomen(Long.parseLong(row[4]))
-                    .cityMen(Long.parseLong(row[5]))
-                    .cityWomen(Long.parseLong(row[6]))
-                    .countryMenWomen(Long.parseLong(row[7]))
-                    .countryMen(Long.parseLong(row[8]))
-                    .countryWomen(Long.parseLong(row[9]))
-                    .build();
+            String age = row[0];
+            if (age.contains("80 и")) age = "80";
+            try {
+                return PopulationXlsx.builder()
+                        .sheetName(rowSet.getMetaData().getSheetName())
+                        .age(Integer.parseInt(age))
+                        .allMenWomen(Long.parseLong(row[1]))
+                        .allMen(Long.parseLong(row[2]))
+                        .allWomen(Long.parseLong(row[3]))
+                        .cityMenWomen(Long.parseLong(row[4]))
+                        .cityMen(Long.parseLong(row[5]))
+                        .cityWomen(Long.parseLong(row[6]))
+                        .countryMenWomen(Long.parseLong(row[7]))
+                        .countryMen(Long.parseLong(row[8]))
+                        .countryWomen(Long.parseLong(row[9]))
+                        .build();
+            } catch (NumberFormatException e) {
+                throw new WrongAgeFormatException(e);
+            }
         };
     }
 

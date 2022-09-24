@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class PopulationXlsx {
 
     private String sheetName;
-    private String age;
+    private Integer age;
     private Long allMenWomen;
     private Long allMen;
     private Long allWomen;
