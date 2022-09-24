@@ -3,6 +3,7 @@ package net.shyshkin.war.txttoelasticsearch.config;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.war.txttoelasticsearch.exception.WrongAgeFormatException;
+import net.shyshkin.war.txttoelasticsearch.listener.ZipOperationsExecutionListener;
 import net.shyshkin.war.txttoelasticsearch.model.PopulationXlsx;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -30,9 +31,10 @@ public class XlsxBatchConfig {
     private final StepBuilderFactory steps;
 
     @Bean
-    Job readWarriorJob() {
+    Job readPopulationJob(ZipOperationsExecutionListener zipOperations) {
         return jobs.get("import XSLX file into db")
                 .incrementer(new RunIdIncrementer())
+                .listener(zipOperations)
                 .start(readXlsxDataStep())
                 .build();
     }
@@ -40,7 +42,7 @@ public class XlsxBatchConfig {
     @Bean
     Step readXlsxDataStep() {
         return steps.get("Read Xlsx file")
-                .<PopulationXlsx, PopulationXlsx>chunk(100)
+                .<PopulationXlsx, PopulationXlsx>chunk(10)
                 .reader(xlsxPopulationReader(null))
                 .writer(list -> list.forEach(item -> log.debug("{}", item)))
                 .faultTolerant()
@@ -50,7 +52,7 @@ public class XlsxBatchConfig {
 
     @Bean
     @StepScope
-    PoiItemReader<PopulationXlsx> xlsxPopulationReader(@Value("#{jobParameters['xlsxPopulationFile']}") FileSystemResource resource) {
+    PoiItemReader<PopulationXlsx> xlsxPopulationReader(@Value("#{jobExecutionContext.get('inputFile')}") FileSystemResource resource) {
         return new PoiItemReader<PopulationXlsx>() {{
             setName("xlsxPopulationReader");
             setResource(resource);
