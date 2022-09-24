@@ -19,6 +19,7 @@ import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 
 import java.util.function.Function;
@@ -27,6 +28,7 @@ import java.util.function.Function;
 @EnableBatchProcessing
 @Configuration
 @RequiredArgsConstructor
+@Profile("txt-to-elasticsearch")
 public class BatchConfig {
 
     private final JobBuilderFactory jobs;
@@ -56,7 +58,7 @@ public class BatchConfig {
     @StepScope
     FlatFileItemReader<WarriorTxt> txtItemReader(@Value("#{jobExecutionContext.get('inputFile')}") FileSystemResource resource) {
         return new FlatFileItemReaderBuilder<WarriorTxt>()
-                .name("txtItemReader")
+                .name("xlsxPopulationReader")
                 .linesToSkip(0)
                 .resource(resource)
                 .delimited()
