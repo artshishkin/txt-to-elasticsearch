@@ -8,7 +8,16 @@ spring:
       platform: mysql
       initialize-schema: always
   datasource:
-    url: jdbc:mysql://localhost:23306/batch_db
+    jdbc-url: jdbc:mysql://localhost:23306/batch_db
     username: batch_user
     password: batch_password
     driver-class-name: com.mysql.cj.jdbc.Driver
+  population-datasource:
+    jdbc-url: jdbc:mysql://localhost:33306/population_db
+    username: population_user
+    password: population_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sql:
+    init:
+      schema-locations: classpath:jdbc/population-init.sql

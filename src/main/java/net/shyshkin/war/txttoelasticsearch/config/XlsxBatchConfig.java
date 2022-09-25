@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.war.txttoelasticsearch.exception.WrongAgeFormatException;
 import net.shyshkin.war.txttoelasticsearch.listener.ZipOperationsExecutionListener;
+import net.shyshkin.war.txttoelasticsearch.mapper.PopulationMapper;
+import net.shyshkin.war.txttoelasticsearch.model.PopulationEntity;
 import net.shyshkin.war.txttoelasticsearch.model.PopulationXlsx;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -14,11 +16,16 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.extensions.excel.RowMapper;
 import org.springframework.batch.extensions.excel.poi.PoiItemReader;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
+
+import javax.sql.DataSource;
+import java.util.function.Function;
 
 @Slf4j
 @EnableBatchProcessing
@@ -29,6 +36,7 @@ public class XlsxBatchConfig {
 
     private final JobBuilderFactory jobs;
     private final StepBuilderFactory steps;
+    private final PopulationMapper populationMapper;
 
     @Bean
     Job readPopulationJob(ZipOperationsExecutionListener zipOperations) {
@@ -42,9 +50,11 @@ public class XlsxBatchConfig {
     @Bean
     Step readXlsxDataStep() {
         return steps.get("Read Xlsx file")
-                .<PopulationXlsx, PopulationXlsx>chunk(10)
+                .<PopulationXlsx, PopulationEntity>chunk(10)
                 .reader(xlsxPopulationReader(null))
-                .writer(list -> list.forEach(item -> log.debug("{}", item)))
+                .processor((Function<PopulationXlsx, PopulationEntity>) populationMapper::toEntity)
+//                .writer(list -> list.forEach(item -> log.debug("{}", item)))
+                .writer(jdbcItemWriter(null))
                 .faultTolerant()
                 .skipPolicy((t, skipCount) -> t instanceof WrongAgeFormatException || t.getCause() instanceof WrongAgeFormatException)
                 .build();
@@ -57,7 +67,7 @@ public class XlsxBatchConfig {
             setName("xlsxPopulationReader");
             setResource(resource);
             setLinesToSkip(6);
-//            setMaxItemCount(10);
+            setMaxItemCount(10);
             setRowMapper(populationRowMapper());
         }};
     }
@@ -89,6 +99,17 @@ public class XlsxBatchConfig {
                 throw new WrongAgeFormatException(e);
             }
         };
+    }
+
+    @Bean
+    @StepScope
+    JdbcBatchItemWriter<PopulationEntity> jdbcItemWriter(DataSource populationDataSource) {
+
+        return new JdbcBatchItemWriterBuilder<PopulationEntity>()
+                .dataSource(populationDataSource)
+                .beanMapped()
+                .sql("insert into population (region_id, age, men, women) VALUES (:regionId,:age,:men,:women)")
+                .build();
     }
 
 }
