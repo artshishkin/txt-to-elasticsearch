@@ -17,3 +17,14 @@ spring:
     username: population_user
     password: population_password
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+---
+spring:
+  config:
+    activate:
+      on-profile: external_db
+  population-datasource:
+    jdbc-url: jdbc:mysql://ddos.shyshkin.org:33306/population_db
+    username: population_user
+    password: population_password
+    driver-class-name: com.mysql.cj.jdbc.Driver

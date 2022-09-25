@@ -6,11 +6,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Profile("xlsx-to-db")
 public class InitDatabase implements CommandLineRunner {
