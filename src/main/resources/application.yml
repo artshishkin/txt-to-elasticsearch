@@ -17,7 +17,3 @@ spring:
     username: population_user
     password: population_password
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-  sql:
-    init:
-      schema-locations: classpath:jdbc/population-init.sql

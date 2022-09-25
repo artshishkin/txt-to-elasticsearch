@@ -67,7 +67,7 @@ public class XlsxBatchConfig {
             setName("xlsxPopulationReader");
             setResource(resource);
             setLinesToSkip(6);
-            setMaxItemCount(10);
+//            setMaxItemCount(10);
             setRowMapper(populationRowMapper());
         }};
     }
