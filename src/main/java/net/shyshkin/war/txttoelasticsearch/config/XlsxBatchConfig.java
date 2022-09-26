@@ -16,6 +16,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.extensions.excel.RowMapper;
 import org.springframework.batch.extensions.excel.poi.PoiItemReader;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 
 import javax.sql.DataSource;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @Slf4j
@@ -50,11 +53,11 @@ public class XlsxBatchConfig {
     @Bean
     Step readXlsxDataStep() {
         return steps.get("Read Xlsx file")
-                .<PopulationXlsx, PopulationEntity>chunk(10)
+                .<PopulationXlsx, PopulationEntity>chunk(100)
                 .reader(xlsxPopulationReader(null))
                 .processor((Function<PopulationXlsx, PopulationEntity>) populationMapper::toEntity)
-//                .writer(list -> list.forEach(item -> log.debug("{}", item)))
-                .writer(jdbcItemWriter(null))
+//                .writer(jdbcItemWriter(null))
+                .writer(regionIdLoggingItemWriter())
                 .faultTolerant()
                 .skipPolicy((t, skipCount) -> WrongFormatException.isCauseOf(t))
                 .build();
@@ -110,6 +113,18 @@ public class XlsxBatchConfig {
                 .beanMapped()
                 .sql("insert into population (region_id, age, men, women) VALUES (:regionId,:age,:men,:women)")
                 .build();
+    }
+
+    private ItemWriter<PopulationEntity> regionIdLoggingItemWriter() {
+        Set<String> printed = ConcurrentHashMap.newKeySet();
+        return entities -> {
+            entities.forEach(entity -> {
+                if (!printed.contains(entity.getRegionId())) {
+                    log.debug("Writing {}", entity);
+                    printed.add(entity.getRegionId());
+                }
+            });
+        };
     }
 
 }
