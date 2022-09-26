@@ -13,7 +13,7 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="net.shyshkin.war.txttoelasticsearch.TxtToElasticsearchApplication" />
     <option name="ACTIVE_PROFILES" value="xlsx-to-db" />
-    <option name="PROGRAM_PARAMETERS" value="zipFile=data/input/Bulletin_2022_simple.zip" />
+    <option name="PROGRAM_PARAMETERS" value="zipFile=data/input/Bulletin_2022.zip" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="Make" enabled="true" />

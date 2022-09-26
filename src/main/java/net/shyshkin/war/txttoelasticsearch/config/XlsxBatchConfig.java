@@ -2,7 +2,7 @@ package net.shyshkin.war.txttoelasticsearch.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.shyshkin.war.txttoelasticsearch.exception.WrongAgeFormatException;
+import net.shyshkin.war.txttoelasticsearch.exception.WrongFormatException;
 import net.shyshkin.war.txttoelasticsearch.listener.ZipOperationsExecutionListener;
 import net.shyshkin.war.txttoelasticsearch.mapper.PopulationMapper;
 import net.shyshkin.war.txttoelasticsearch.model.PopulationEntity;
@@ -56,7 +56,7 @@ public class XlsxBatchConfig {
 //                .writer(list -> list.forEach(item -> log.debug("{}", item)))
                 .writer(jdbcItemWriter(null))
                 .faultTolerant()
-                .skipPolicy((t, skipCount) -> t instanceof WrongAgeFormatException || t.getCause() instanceof WrongAgeFormatException)
+                .skipPolicy((t, skipCount) -> WrongFormatException.isCauseOf(t))
                 .build();
     }
 
@@ -95,8 +95,8 @@ public class XlsxBatchConfig {
                         .countryMen(Long.parseLong(row[8]))
                         .countryWomen(Long.parseLong(row[9]))
                         .build();
-            } catch (NumberFormatException e) {
-                throw new WrongAgeFormatException(e);
+            } catch (Exception e) {
+                throw new WrongFormatException(e);
             }
         };
     }
