@@ -3,10 +3,39 @@
 ![Spring Batch][springbatch]
 ![Project licence][licence]
 
-# Mobilization of Orks 
-Importing Orks' mobilization data published by [Anonymous TV](https://twitter.com/YourAnonTV/status/1573290421270507520) 
+# Mobilization of Orks
 
+Importing Orks' mobilization data published by [Anonymous TV](https://twitter.com/YourAnonTV/status/1573290421270507520)
 
+#### Import mobilization data into Elasticsearch
+
+1. Start Elasticsearch
+    - from folder `docker-compose` run
+    - `docker-compose up -d`
+2. Build project
+    - `mvn clean package`
+3. Run mobilization import job to Elasticsearch
+    - from folder `target` run
+    - `java -jar txt-to-elasticsearch-0.0.1-SNAPSHOT.jar --spring.profiles.active=txt-to-elasticsearch zipFile=data/input/Priziv1volna.zip`
+
+#### View mobilization data in Kibana
+
+1. Visit Kibana console
+    - [http://localhost:5601/](http://localhost:5601/)
+2. Create index pattern
+    - Menu &rarr; Management &rarr; Kibana &rarr; Index Patterns &rarr;
+    - Create index pattern
+    - Name: `warriors*`
+    - Timestamp field: `birthDate`
+3. View all the data
+    - Menu &rarr; Discover &rarr;
+    - Search: leave empty
+    - Period: last 60 years
+    - Refresh
+4. Search for certain data 
+    - Search:
+    - `address : МОСКВА and fullName.keyword :  С* and fullName : СЕРГЕЙ`
+    - `address : МОСКВА and fullName.keyword :  С* and fullName : СЕРГЕЙ and birthDate >=22.09.1992 and birthDate <=27.09.1993`
 
 [springver]: https://img.shields.io/badge/dynamic/xml?label=Spring%20Boot&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27parent%27%5D%2F%2A%5Blocal-name%28%29%3D%27version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2Fartshishkin%2Ftxt-to-elasticsearch%2Fmaster%2Fpom.xml&logo=Spring&labelColor=white&color=grey
 [licence]: https://img.shields.io/github/license/artshishkin/txt-to-elasticsearch.svg
