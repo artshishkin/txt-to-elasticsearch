@@ -7,6 +7,7 @@ import net.shyshkin.war.txttoelasticsearch.listener.ZipOperationsExecutionListen
 import net.shyshkin.war.txttoelasticsearch.mapper.PopulationMapper;
 import net.shyshkin.war.txttoelasticsearch.model.PopulationEntity;
 import net.shyshkin.war.txttoelasticsearch.model.PopulationXlsx;
+import net.shyshkin.war.txttoelasticsearch.partitioner.RangePartitioner;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -15,7 +16,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.extensions.excel.RowMapper;
-import org.springframework.batch.extensions.excel.poi.PoiItemReader;
+import org.springframework.batch.extensions.excel.streaming.StreamingXlsxItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 import javax.sql.DataSource;
 import java.util.Set;
@@ -41,12 +43,25 @@ public class XlsxBatchConfig {
     private final StepBuilderFactory steps;
     private final PopulationMapper populationMapper;
 
+    @Value("${app.range-partitioner.expected-max-size:15000}")
+    private Integer partitionerExpectedMaxSize;
+
     @Bean
     Job readPopulationJob(ZipOperationsExecutionListener zipOperations) {
         return jobs.get("import XSLX file into db")
                 .incrementer(new RunIdIncrementer())
                 .listener(zipOperations)
-                .start(readXlsxDataStep())
+                .start(partitionStep())
+                .build();
+    }
+
+    @Bean
+    Step partitionStep() {
+        return steps.get("partitionStep")
+                .partitioner(readXlsxDataStep().getName(), new RangePartitioner(partitionerExpectedMaxSize))
+                .step(readXlsxDataStep())
+                .gridSize(10) //HikariCP default max connection pool size - may be optimal
+                .taskExecutor(new SimpleAsyncTaskExecutor("async-"))
                 .build();
     }
 
@@ -54,10 +69,11 @@ public class XlsxBatchConfig {
     Step readXlsxDataStep() {
         return steps.get("Read Xlsx file")
                 .<PopulationXlsx, PopulationEntity>chunk(100)
-                .reader(xlsxPopulationReader(null))
+                .reader(xlsxPopulationReader(null, null, null))
                 .processor((Function<PopulationXlsx, PopulationEntity>) populationMapper::toEntity)
-//                .writer(jdbcItemWriter(null))
-                .writer(regionIdLoggingItemWriter())
+                .writer(jdbcItemWriter(null))
+//                .writer(regionIdLoggingItemWriter())
+//                .writer(loggingItemWriter())
                 .faultTolerant()
                 .skipPolicy((t, skipCount) -> WrongFormatException.isCauseOf(t))
                 .build();
@@ -65,12 +81,17 @@ public class XlsxBatchConfig {
 
     @Bean
     @StepScope
-    PoiItemReader<PopulationXlsx> xlsxPopulationReader(@Value("#{jobExecutionContext.get('inputFile')}") FileSystemResource resource) {
-        return new PoiItemReader<PopulationXlsx>() {{
+    StreamingXlsxItemReader<PopulationXlsx> xlsxPopulationReader(
+            @Value("#{jobExecutionContext.get('inputFile')}") FileSystemResource resource,
+            @Value("#{stepExecutionContext['minValue']}") Integer minValue,
+            @Value("#{stepExecutionContext['maxValue']}") Integer maxValue) {
+        log.debug("Creating bean xlsxPopulationReader");
+        return new StreamingXlsxItemReader<>() {{
             setName("xlsxPopulationReader");
             setResource(resource);
             setLinesToSkip(6);
-//            setMaxItemCount(10);
+            setCurrentItemCount(minValue);
+            setMaxItemCount(maxValue);
             setRowMapper(populationRowMapper());
         }};
     }
@@ -125,6 +146,10 @@ public class XlsxBatchConfig {
                 }
             });
         };
+    }
+
+    private ItemWriter<PopulationEntity> loggingItemWriter() {
+        return entities -> entities.forEach(entity -> log.debug("Writing -> {}", entity));
     }
 
 }
