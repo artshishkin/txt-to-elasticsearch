@@ -18,7 +18,7 @@ Importing Orks' mobilization data published by [Anonymous TV](https://twitter.co
     - `mvn clean package`
 3. Run mobilization import job to Elasticsearch
     - from folder `target` run
-    - `java -jar txt-to-elasticsearch-0.0.1-SNAPSHOT.jar --spring.profiles.active=txt-to-elasticsearch zipFile=data/input/Priziv1volna.zip`
+    - `java -jar txt-to-elasticsearch-0.0.1-SNAPSHOT.jar --spring.profiles.active=txt-to-elasticsearch zipFile=./../data/input/Priziv1volna.zip`
 
 #### View mobilization data in Kibana
 
