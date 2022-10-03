@@ -11,6 +11,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.nio.charset.Charset;
 
 @Slf4j
 @Component
@@ -26,10 +27,14 @@ public class InitDatabase {
     @Value("jdbc/population-data.sql")
     private ClassPathResource dataDb;
 
+    @Value("${app.sql.encoding:UTF-8}")
+    private Charset sqlEncoding;
+
     @EventListener(ApplicationStartedEvent.class)
     public void applicationStarted() {
         log.debug("Start initializing database");
         ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
+        resourceDatabasePopulator.setSqlScriptEncoding(sqlEncoding.name());
         resourceDatabasePopulator.addScript(initDb);
         resourceDatabasePopulator.addScript(dataDb);
         resourceDatabasePopulator.execute(populationDataSource);

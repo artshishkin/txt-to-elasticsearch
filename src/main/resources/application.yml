@@ -4,6 +4,7 @@ logging:
 
 app.reader:
   txt.encoding: UTF-8
+app.sql.encoding: UTF-8
 
 spring:
   batch:
