@@ -2,6 +2,9 @@ logging:
   level:
     net.shyshkin: debug
 
+app.reader:
+  txt.encoding: UTF-8
+
 spring:
   batch:
     jdbc:

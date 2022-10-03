@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 
+import java.nio.charset.Charset;
 import java.util.function.Function;
 
 @Slf4j
@@ -35,6 +36,9 @@ public class WarriorBatchConfig {
     private final StepBuilderFactory steps;
     private final WarriorMapper warriorMapper;
     private final ElasticsearchItemWriter elasticWriter;
+
+    @Value("${app.reader.txt.encoding}")
+    private Charset charsetEncoding;
 
     @Bean
     Job readWarriorJob(ZipOperationsExecutionListener zipOperations) {
@@ -59,6 +63,7 @@ public class WarriorBatchConfig {
     FlatFileItemReader<WarriorTxt> txtItemReader(@Value("#{jobExecutionContext.get('inputFile')}") FileSystemResource resource) {
         return new FlatFileItemReaderBuilder<WarriorTxt>()
                 .name("txtItemReader")
+                .encoding(charsetEncoding.name())
                 .linesToSkip(0)
                 .resource(resource)
                 .delimited()
