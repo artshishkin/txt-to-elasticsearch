@@ -17,6 +17,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 @EnableBatchProcessing
@@ -51,7 +52,7 @@ public class FindWarriorAccountBatchConfig {
     Step readWarriorsFindCityAndAccountAndPopulateToElasticsearch() {
 
         Long startIndex = 0L;
-        final Long count = 10L;
+        final Long count = 400_000L;
 
         return steps.get("Find warrior Account and write it to Elasticsearch")
                 .tasklet((contribution, chunkContext) -> {
@@ -60,16 +61,16 @@ public class FindWarriorAccountBatchConfig {
                             .take(count)
                             .map(warriorMapper::toDocWithAccount)
                             .doOnNext(warriorAccount -> log.debug("Processing {}", warriorAccount))
-                            .flatMap(warriorAccount ->
-//                                    cityRepository.findFirstByTitleContainingOrAreaContainingOrRegionContaining(warriorAccount.getAddress(),
-                                    cityRepository.findCityMatchingAddress(warriorAccount.getAddress())
-                                            .map(city -> {
-                                                warriorAccount.setCity(city);
-                                                log.debug("Found city: {} for {}", city, warriorAccount);
-                                                return warriorAccount;
-                                            })
+                            .flatMap(warriorAccount -> Mono.just(warriorAccount.getAddress())
+                                    .map(address -> address.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", " "))
+                                    .flatMap(cityRepository::findCityMatchingAddress)
+                                    .map(city -> {
+                                        warriorAccount.setCity(city);
+                                        log.debug("Found city: {} for {}", city, warriorAccount);
+                                        return warriorAccount;
+                                    })
                             )
-                            .buffer(10)
+                            .buffer(100)
                             .flatMap(warriorAccountRepository::saveAll)
                             .count()
                             .block();
