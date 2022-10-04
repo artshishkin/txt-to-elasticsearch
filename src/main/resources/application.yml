@@ -28,7 +28,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   elasticsearch:
     webclient:
-      max-in-memory-size: 104857600
+      max-in-memory-size: 1048576
 
 ---
 spring:
