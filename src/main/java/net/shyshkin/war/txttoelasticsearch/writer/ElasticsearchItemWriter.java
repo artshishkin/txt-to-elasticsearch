@@ -18,6 +18,9 @@ public class ElasticsearchItemWriter implements ItemWriter<WarriorDoc> {
 
     @Override
     public void write(List<? extends WarriorDoc> items) throws Exception {
-        repository.saveAll(items);
+        repository.saveAll(items)
+                .count()
+                .doOnNext(count -> log.debug("Saved {} documents into Elasticsearch, starting from {}", count, items.get(0)))
+                .subscribe();
     }
 }

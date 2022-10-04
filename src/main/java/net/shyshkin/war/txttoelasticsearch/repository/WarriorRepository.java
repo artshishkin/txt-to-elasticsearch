@@ -1,7 +1,7 @@
 package net.shyshkin.war.txttoelasticsearch.repository;
 
 import net.shyshkin.war.txttoelasticsearch.model.WarriorDoc;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
 
-public interface WarriorRepository extends ElasticsearchRepository<WarriorDoc, Integer> {
+public interface WarriorRepository extends ReactiveElasticsearchRepository<WarriorDoc, Integer> {
 }
