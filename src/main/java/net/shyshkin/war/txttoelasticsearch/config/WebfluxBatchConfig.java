@@ -40,11 +40,12 @@ public class WebfluxBatchConfig {
     Step readCitiesFromWebServiceAndPopulateToElasticsearch() {
         return steps.get("Read Cities Data and Save to Elasticsearch")
                 .tasklet((contribution, chunkContext) -> {
-                    var last = webApiService.getCities()
+                    var count = webApiService.getCities()
                             .buffer(1000)
                             .flatMap(cityRepository::saveAll)
-                            .blockLast();
-                    log.debug("Last city: {}", last);
+                            .count()
+                            .block();
+                    log.debug("Total cities count: {}", count);
                     return RepeatStatus.FINISHED;
                 })
                 .build();
