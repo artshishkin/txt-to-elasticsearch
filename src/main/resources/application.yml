@@ -5,8 +5,14 @@ logging:
 app.reader:
   txt.encoding: UTF-8
 app.sql.encoding: UTF-8
+app.web-service:
+  base-url: http://ddos.shyshkin.org:8080
+  cities-endpoint: /cities/all
+  accept-type: text/event-stream
 
 spring:
+  main:
+    web-application-type: none
   batch:
     jdbc:
       platform: mysql
