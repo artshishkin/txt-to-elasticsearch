@@ -13,7 +13,7 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="net.shyshkin.war.txttoelasticsearch.TxtToElasticsearchApplication" />
     <option name="ACTIVE_PROFILES" value="find-warrior-account" />
-    <option name="PROGRAM_PARAMETERS" value="warriorStartIndex=0 warriorCount=40" />
+    <option name="PROGRAM_PARAMETERS" value="warriorStartIndex=0 warriorCount=400000" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="Make" enabled="true" />

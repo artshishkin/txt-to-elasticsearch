@@ -60,13 +60,13 @@ public class FindWarriorAccountBatchConfig {
                             .flatMap(warriorAccount -> Mono.just(warriorAccount.getAddress())
                                     .map(address -> address.replaceAll("[^\\p{IsAlphabetic}\\p{IsDigit}]", " "))
                                     .flatMap(cityRepository::findCityMatchingAddress)
-                                    .map(city -> {
+                                    .doOnNext(city -> {
                                         warriorAccount.setCity(city);
                                         log.debug("Found city: {} for {}", city, warriorAccount);
-                                        return warriorAccount;
                                     })
+                                    .thenReturn(warriorAccount)
                             )
-                            .buffer(100)
+                            .buffer(1000)
                             .flatMap(warriorAccountRepository::saveAll)
                             .count()
                             .block();
