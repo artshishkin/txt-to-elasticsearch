@@ -1,6 +1,8 @@
 logging:
   level:
     net.shyshkin: debug
+    "org.springframework.web.reactive.function.client": debug
+    "org.springframework.data.elasticsearch.core": debug
 
 app.reader:
   txt.encoding: UTF-8
@@ -28,7 +30,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   elasticsearch:
     webclient:
-      max-in-memory-size: 1048576
+      max-in-memory-size: 104857600
 
 ---
 spring:
