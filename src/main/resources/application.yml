@@ -9,7 +9,6 @@ app.web-service:
   base-url: http://ddos.shyshkin.org:8080
   cities-endpoint: /cities/all
   accept-type: text/event-stream
-
 spring:
   main:
     web-application-type: none
@@ -27,6 +26,9 @@ spring:
     username: population_user
     password: population_password
     driver-class-name: com.mysql.cj.jdbc.Driver
+  elasticsearch:
+    webclient:
+      max-in-memory-size: 104857600
 
 ---
 spring:

@@ -13,7 +13,6 @@
     </extension>
     <option name="SPRING_BOOT_MAIN_CLASS" value="net.shyshkin.war.txttoelasticsearch.TxtToElasticsearchApplication" />
     <option name="ACTIVE_PROFILES" value="webservice-to-elasticsearch" />
-    <option name="PROGRAM_PARAMETERS" value="zipFile=data/input/Priziv1volna.zip" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="Make" enabled="true" />
