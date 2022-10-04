@@ -11,9 +11,11 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -39,20 +41,14 @@ public class FindWarriorAccountBatchConfig {
     Job findWarriorAccountJob() {
         return jobs.get("Find warrior Account and write it to Elasticsearch")
                 .incrementer(new RunIdIncrementer())
-                .start(readWarriorsFindCityAndAccountAndPopulateToElasticsearch())
-//                .start(readWarriorsFindCityAndAccountAndPopulateToElasticsearch(null, null))
+                .start(readWarriorsFindCityAndAccountAndPopulateToElasticsearch(null, null))
                 .build();
     }
 
-    //    @Bean
-//    @StepScope
-//    Step readWarriorsFindCityAndAccountAndPopulateToElasticsearch(@Value("#{jobParameters['warriorStartIndex']}") Long startIndex,
-//                                                                  @Value("#{jobParameters['warriorCount']}") final Long count) {
     @Bean
-    Step readWarriorsFindCityAndAccountAndPopulateToElasticsearch() {
-
-        Long startIndex = 0L;
-        final Long count = 400_000L;
+    @JobScope
+    Step readWarriorsFindCityAndAccountAndPopulateToElasticsearch(@Value("#{jobParameters['warriorStartIndex']}") Long startIndex,
+                                                                  @Value("#{jobParameters['warriorCount']}") final Long count) {
 
         return steps.get("Find warrior Account and write it to Elasticsearch")
                 .tasklet((contribution, chunkContext) -> {
