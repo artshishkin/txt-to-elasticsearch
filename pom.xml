@@ -17,7 +17,7 @@
         <java.version>11</java.version>
         <zip4j.version>2.6.1</zip4j.version>
         <mapstruct.version>1.5.1.Final</mapstruct.version>
-        <spring.boot.version>@parent.version@</spring.boot.version>
+        <spring.boot.version>@project.parent.version@</spring.boot.version>
         <poi.version>5.2.3</poi.version>
     </properties>
     <dependencies>
@@ -28,6 +28,14 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
 
         <dependency>
