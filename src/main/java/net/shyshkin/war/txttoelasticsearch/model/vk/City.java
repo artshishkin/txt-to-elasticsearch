@@ -1,4 +1,4 @@
-package net.shyshkin.war.txttoelasticsearch.model;
+package net.shyshkin.war.txttoelasticsearch.model.vk;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
