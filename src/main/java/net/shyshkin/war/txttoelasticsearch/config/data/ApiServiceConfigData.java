@@ -12,6 +12,7 @@ public class ApiServiceConfigData {
 
     private String baseUrl;
     private String citiesEndpoint;
+    private String searchEndpoint;
     private MediaType acceptType;
 
 }

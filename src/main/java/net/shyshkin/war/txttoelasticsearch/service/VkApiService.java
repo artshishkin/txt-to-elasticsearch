@@ -3,7 +3,9 @@ package net.shyshkin.war.txttoelasticsearch.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.war.txttoelasticsearch.config.data.ApiServiceConfigData;
+import net.shyshkin.war.txttoelasticsearch.dto.SearchRequest;
 import net.shyshkin.war.txttoelasticsearch.model.vk.City;
+import net.shyshkin.war.txttoelasticsearch.model.vk.VkUser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -34,5 +36,27 @@ public class VkApiService implements WebApiService {
                         log.debug("Getting City {}: {}", counter.get(), city);
                     }
                 });
+    }
+
+    @Override
+    public Flux<VkUser> searchUser(SearchRequest searchRequest) {
+        return webClient
+                .get().uri(
+                        uriBuilder -> uriBuilder
+                                .path(configData.getSearchEndpoint())
+                                .queryParam("name", searchRequest.getName())
+                                .queryParam("bday", searchRequest.getBday())
+                                .queryParam("bmonth", searchRequest.getBmonth())
+                                .queryParam("byear", searchRequest.getByear())
+                                .queryParam("city", searchRequest.getCity())
+                                .build()
+                )
+                .accept(configData.getAcceptType())
+                .exchangeToFlux(response -> {
+                    log.debug("Status code: {}", response.statusCode());
+                    log.debug("Headers: {}", response.headers().asHttpHeaders());
+                    return response.bodyToFlux(VkUser.class);
+                })
+                .doOnNext(user -> log.debug("Found {} for {}", user, searchRequest));
     }
 }

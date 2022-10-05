@@ -1,7 +1,7 @@
 logging:
   level:
-    net.shyshkin: INFO
-#    "org.springframework.web.reactive.function.client": debug
+    net.shyshkin: debug
+    "org.springframework.web.reactive.function.client": debug
 #    "org.springframework.data.elasticsearch.core": debug
 
 app.reader:
@@ -10,6 +10,7 @@ app.sql.encoding: UTF-8
 app.web-service:
   base-url: http://ddos.shyshkin.org:8080
   cities-endpoint: /cities/all
+  search-endpoint: /search
   accept-type: text/event-stream
 spring:
   main:
