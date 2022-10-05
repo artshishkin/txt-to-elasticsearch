@@ -2,6 +2,7 @@ package net.shyshkin.war.txttoelasticsearch.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.shyshkin.war.txttoelasticsearch.dto.SearchRequest;
 import net.shyshkin.war.txttoelasticsearch.mapper.WarriorMapper;
 import net.shyshkin.war.txttoelasticsearch.repository.CityRepository;
 import net.shyshkin.war.txttoelasticsearch.repository.WarriorAccountRepository;
@@ -20,6 +21,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @Slf4j
 @EnableBatchProcessing
@@ -65,6 +68,21 @@ public class FindWarriorAccountBatchConfig {
                                         log.debug("Found city: {} for {}", city, warriorAccount);
                                     })
                                     .thenReturn(warriorAccount)
+                            )
+                            .flatMap(warriorAccount ->
+                                    Mono.justOrEmpty(warriorAccount.getCity())
+                                            .map(city -> SearchRequest.builder()
+                                                    .name(warriorAccount.getLastFirstName())
+                                                    .bday(warriorAccount.getBirthDate().getDayOfMonth())
+                                                    .bmonth(warriorAccount.getBirthDate().getMonthValue())
+                                                    .byear(warriorAccount.getBirthDate().getYear())
+                                                    .city(city.getId())
+                                                    .build()
+                                            )
+                                            .flatMapMany(webApiService::searchUser)
+                                            .collectList()
+                                            .doOnNext(warriorAccount::setAccounts)
+                                            .thenReturn(warriorAccount)
                             )
                             .buffer(1000)
                             .flatMap(warriorAccountRepository::saveAll)
