@@ -58,6 +58,8 @@ public class FindWarriorAccountBatchConfig {
                     var savedCount = warriorRepository.findAll()
                             .skip(startIndex)
                             .take(count)
+                            .limitRate(10)
+                            .delayElements(Duration.ofMillis(350))
                             .map(warriorMapper::toDocWithAccount)
                             .doOnNext(warriorAccount -> log.debug("Processing {}", warriorAccount))
                             .flatMap(warriorAccount -> Mono.just(warriorAccount.getAddress())
@@ -84,7 +86,7 @@ public class FindWarriorAccountBatchConfig {
                                             .doOnNext(warriorAccount::setAccounts)
                                             .thenReturn(warriorAccount)
                             )
-                            .buffer(1000)
+                            .buffer(100)
                             .flatMap(warriorAccountRepository::saveAll)
                             .count()
                             .block();
