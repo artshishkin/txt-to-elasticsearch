@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.war.txttoelasticsearch.config.data.ApiServiceConfigData;
 import net.shyshkin.war.txttoelasticsearch.dto.SearchRequest;
+import net.shyshkin.war.txttoelasticsearch.exception.WebApiServiceException;
 import net.shyshkin.war.txttoelasticsearch.model.vk.City;
 import net.shyshkin.war.txttoelasticsearch.model.vk.VkUser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -55,6 +57,10 @@ public class VkApiService implements WebApiService {
                 .exchangeToFlux(response -> {
                     log.debug("Status code: {}", response.statusCode());
                     log.debug("Headers: {}", response.headers().asHttpHeaders());
+                    if (!response.statusCode().is2xxSuccessful())
+                        return response.bodyToMono(String.class)
+                                .map(WebApiServiceException::new)
+                                .flatMapMany(Mono::error);
                     return response.bodyToFlux(VkUser.class);
                 })
                 .doOnNext(user -> log.debug("Found {} for {}", user, searchRequest));

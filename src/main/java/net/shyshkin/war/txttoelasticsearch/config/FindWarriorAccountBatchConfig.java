@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Profile;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
 @EnableBatchProcessing
@@ -59,7 +60,7 @@ public class FindWarriorAccountBatchConfig {
                             .skip(startIndex)
                             .take(count)
                             .limitRate(10)
-                            .delayElements(Duration.ofMillis(350))
+                            .delayElements(Duration.ofMillis(400))
                             .map(warriorMapper::toDocWithAccount)
                             .doOnNext(warriorAccount -> log.debug("Processing {}", warriorAccount))
                             .flatMap(warriorAccount -> Mono.just(warriorAccount.getAddress())
