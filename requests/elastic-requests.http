@@ -2,6 +2,10 @@
 GET http://localhost:9200
 Accept: application/json
 
+### Get Elasticsearch License
+GET http://localhost:9200/_xpack/license
+Accept: application/json
+
 ### Search everything
 GET http://localhost:9200/cities/_search
 Accept: application/json
