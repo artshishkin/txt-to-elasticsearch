@@ -56,6 +56,7 @@ public class FindWarriorAccountBatchConfig {
 
         return steps.get("Find warrior Account and write it to Elasticsearch")
                 .tasklet((contribution, chunkContext) -> {
+                    AtomicLong counter = new AtomicLong(startIndex);
                     var savedCount = warriorRepository.findAll()
                             .skip(startIndex)
                             .take(count)
@@ -72,6 +73,7 @@ public class FindWarriorAccountBatchConfig {
                                     })
                                     .thenReturn(warriorAccount)
                             )
+                            .doOnNext(account -> log.debug("Current warrior index: {}", counter.incrementAndGet()))
                             .flatMap(warriorAccount ->
                                     Mono.justOrEmpty(warriorAccount.getCity())
                                             .map(city -> SearchRequest.builder()
