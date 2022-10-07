@@ -27,10 +27,10 @@ public class VkUser {
     private String about;
     private String activities;
     private String books;
-    private JsonNode career;
+    private List<CareerItem> career;
     private JsonNode connections;
     private JsonNode contacts;
-    private JsonNode counters; //Поле возвращается только в методе users.get при запросе информации об одном пользователе, с передачей пользовательского access_token.
+    private Counters counters; //Поле возвращается только в методе users.get при запросе информации об одном пользователе, с передачей пользовательского access_token.
     private String domain;
     private JsonNode education;
     private JsonNode exports;
@@ -45,7 +45,7 @@ public class VkUser {
     private JsonNode occupation;
     private JsonNode personal;
     private String quotes;
-    private JsonNode relatives;
+    private List<Relative> relatives;
     private Integer relation;
     private JsonNode schools;
     private Integer sex;
