@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class VkUser {
@@ -36,7 +38,7 @@ public class VkUser {
     private Integer has_mobile;
     private Integer has_photo;
     private String home_town;
-    private JsonNode military;
+    private List<MilitaryItem> military;
     private String movies;
     private String music;
     private String nickname;
