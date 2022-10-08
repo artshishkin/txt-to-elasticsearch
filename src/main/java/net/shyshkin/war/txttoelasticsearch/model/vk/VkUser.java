@@ -1,5 +1,6 @@
 package net.shyshkin.war.txttoelasticsearch.model.vk;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class VkUser {
 
     private Long id;
@@ -41,6 +43,8 @@ public class VkUser {
     private List<MilitaryItem> military;
     private String movies;
     private String music;
+    private String mobile_phone;
+    private String home_phone;
     private String nickname;
     private JsonNode occupation;
     private JsonNode personal;
