@@ -13,7 +13,7 @@ class VkUserTest {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    void objectMapperShouldMapMilitaryCorrectly() throws JsonProcessingException {
+    void militaryMappingTest() throws JsonProcessingException {
         //given
         String userJson = user01();
 
@@ -34,7 +34,7 @@ class VkUserTest {
     }
 
     @Test
-    void objectMapperShouldMapRelativesCorrectly() throws JsonProcessingException {
+    void relativesMappingTest() throws JsonProcessingException {
         //given
         String userJson = user01();
 
@@ -52,7 +52,7 @@ class VkUserTest {
     }
 
     @Test
-    void objectMapperShouldMapCareerCorrectly() throws JsonProcessingException {
+    void careerMappingTest() throws JsonProcessingException {
         //given
         String userJson = user01();
 
@@ -74,7 +74,7 @@ class VkUserTest {
     }
 
     @Test
-    void objectMapperShouldMapOccupationCorrectly() throws JsonProcessingException {
+    void occupationMappingTest() throws JsonProcessingException {
         //given
         String userJson = user02();
 
