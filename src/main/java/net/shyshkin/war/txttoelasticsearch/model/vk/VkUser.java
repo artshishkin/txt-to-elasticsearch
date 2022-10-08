@@ -46,7 +46,7 @@ public class VkUser {
     private String mobile_phone;
     private String home_phone;
     private String nickname;
-    private JsonNode occupation;
+    private Occupation occupation;
     private JsonNode personal;
     private String quotes;
     private List<Relative> relatives;

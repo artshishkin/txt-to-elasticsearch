@@ -73,6 +73,27 @@ class VkUserTest {
                 );
     }
 
+    @Test
+    void objectMapperShouldMapOccupationCorrectly() throws JsonProcessingException {
+        //given
+        String userJson = user02();
+
+        //when
+        var vkUser = objectMapper.readValue(userJson, VkUser.class);
+
+        //then
+        assertThat(vkUser.getOccupation())
+                .satisfies(occupation -> assertAll(
+                                () -> assertThat(occupation.getId()).isEqualTo(3924),
+                                () -> assertThat(occupation.getName()).isEqualTo("НВВКУ (ВИ МО РФ) (бывш. НВОКУ, НВВПОУ)"),
+                                () -> assertThat(occupation.getType()).isEqualTo(Occupation.Type.UNIVERSITY),
+                                () -> assertThat(occupation.getGraduateYear()).isEqualTo(2018),
+                                () -> assertThat(occupation.getCountryId()).isEqualTo(1),
+                                () -> assertThat(occupation.getCityId()).isEqualTo(99)
+                        )
+                );
+    }
+
     private static String user01() {
         return "{\n" +
                 "      \"id\": 188222243,\n" +
@@ -248,6 +269,66 @@ class VkUserTest {
                 "      \"can_access_closed\": true,\n" +
                 "      \"is_closed\": false\n" +
                 "    }";
+    }
+
+    private static String user02() {
+        return "  {\n" +
+                "    \"id\": 180581556,\n" +
+                "    \"first_name\": \"Хачатур\",\n" +
+                "    \"last_name\": \"Матевосян\",\n" +
+                "    \"city\": {\n" +
+                "      \"id\": 99,\n" +
+                "      \"title\": \"Новосибирск\",\n" +
+                "      \"area\": null,\n" +
+                "      \"region\": null\n" +
+                "    },\n" +
+                "    \"country\": {\n" +
+                "      \"id\": 1,\n" +
+                "      \"title\": \"Россия\"\n" +
+                "    },\n" +
+                "    \"last_seen\": {\n" +
+                "      \"platform\": 4,\n" +
+                "      \"time\": 1663495833\n" +
+                "    },\n" +
+                "    \"deactivated\": null,\n" +
+                "    \"about\": null,\n" +
+                "    \"activities\": null,\n" +
+                "    \"books\": null,\n" +
+                "    \"career\": null,\n" +
+                "    \"connections\": null,\n" +
+                "    \"contacts\": null,\n" +
+                "    \"counters\": null,\n" +
+                "    \"domain\": \"hachik96\",\n" +
+                "    \"education\": null,\n" +
+                "    \"exports\": null,\n" +
+                "    \"followers_count\": 313,\n" +
+                "    \"has_mobile\": 1,\n" +
+                "    \"has_photo\": 1,\n" +
+                "    \"home_town\": null,\n" +
+                "    \"military\": null,\n" +
+                "    \"movies\": null,\n" +
+                "    \"music\": null,\n" +
+                "    \"nickname\": \"\",\n" +
+                "    \"occupation\": {\n" +
+                "      \"id\": 3924,\n" +
+                "      \"name\": \"НВВКУ (ВИ МО РФ) (бывш. НВОКУ, НВВПОУ)\",\n" +
+                "      \"type\": \"university\",\n" +
+                "      \"graduate_year\": 2018,\n" +
+                "      \"country_id\": 1,\n" +
+                "      \"city_id\": 99\n" +
+                "    },\n" +
+                "    \"personal\": null,\n" +
+                "    \"quotes\": null,\n" +
+                "    \"relatives\": null,\n" +
+                "    \"relation\": null,\n" +
+                "    \"schools\": null,\n" +
+                "    \"sex\": 2,\n" +
+                "    \"site\": \"\",\n" +
+                "    \"status\": \"Instagram... matevosyan_54\",\n" +
+                "    \"universities\": null,\n" +
+                "    \"bdate\": \"1.2.1996\",\n" +
+                "    \"is_closed\": false\n" +
+                "  }";
     }
 
 }
