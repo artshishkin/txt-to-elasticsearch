@@ -32,7 +32,7 @@ public class VkUser {
     private List<CareerItem> career;
     private JsonNode connections;
     private JsonNode contacts;
-    private Counters counters; //Поле возвращается только в методе users.get при запросе информации об одном пользователе, с передачей пользовательского access_token.
+    private Counters counters; //Поле возвращается только в методе users.getSearchName при запросе информации об одном пользователе, с передачей пользовательского access_token.
     private String domain;
     private JsonNode education;
     private JsonNode exports;

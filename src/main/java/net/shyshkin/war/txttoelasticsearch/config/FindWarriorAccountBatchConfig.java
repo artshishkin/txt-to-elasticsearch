@@ -7,6 +7,7 @@ import net.shyshkin.war.txttoelasticsearch.mapper.WarriorMapper;
 import net.shyshkin.war.txttoelasticsearch.repository.CityRepository;
 import net.shyshkin.war.txttoelasticsearch.repository.WarriorAccountRepository;
 import net.shyshkin.war.txttoelasticsearch.repository.WarriorRepository;
+import net.shyshkin.war.txttoelasticsearch.service.SearchUtilService;
 import net.shyshkin.war.txttoelasticsearch.service.WebApiService;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -36,6 +37,7 @@ public class FindWarriorAccountBatchConfig {
     private final StepBuilderFactory steps;
 
     private final WebApiService webApiService;
+    private final SearchUtilService searchUtilService;
     private final CityRepository cityRepository;
     private final WarriorRepository warriorRepository;
     private final WarriorAccountRepository warriorAccountRepository;
@@ -77,7 +79,7 @@ public class FindWarriorAccountBatchConfig {
                             .flatMap(warriorAccount ->
                                     Mono.justOrEmpty(warriorAccount.getCity())
                                             .map(city -> SearchRequest.builder()
-                                                    .name(warriorAccount.getLastFirstName())
+                                                    .name(searchUtilService.getSearchName(warriorAccount.getFullName()))
                                                     .bday(warriorAccount.getBirthDate().getDayOfMonth())
                                                     .bmonth(warriorAccount.getBirthDate().getMonthValue())
                                                     .byear(warriorAccount.getBirthDate().getYear())

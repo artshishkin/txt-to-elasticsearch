@@ -20,13 +20,4 @@ public class WarriorAccount extends WarriorDoc {
     private City city;
     private List<VkUser> accounts;
 
-    public String getLastFirstName() {
-        String fullName = getFullName();
-        String[] nameParts = fullName.trim()
-                .replaceAll("\\s+"," ")
-                .split(" ");
-        if (nameParts.length < 3) return fullName;
-        return nameParts[0] + " " + nameParts[1];
-    }
-
 }

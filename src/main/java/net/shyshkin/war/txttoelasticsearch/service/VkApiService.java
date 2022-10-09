@@ -7,6 +7,7 @@ import net.shyshkin.war.txttoelasticsearch.dto.SearchRequest;
 import net.shyshkin.war.txttoelasticsearch.exception.WebApiServiceException;
 import net.shyshkin.war.txttoelasticsearch.model.vk.City;
 import net.shyshkin.war.txttoelasticsearch.model.vk.VkUser;
+import net.shyshkin.war.txttoelasticsearch.util.SearchUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -42,11 +43,12 @@ public class VkApiService implements WebApiService {
 
     @Override
     public Flux<VkUser> searchUser(SearchRequest searchRequest) {
+        String searchName = SearchUtil.getSearchName(searchRequest.getName(), configData.getSearchNameType());
         return webClient
                 .get().uri(
                         uriBuilder -> uriBuilder
                                 .path(configData.getSearchEndpoint())
-                                .queryParam("name", searchRequest.getName())
+                                .queryParam("name", searchName)
                                 .queryParam("bday", searchRequest.getBday())
                                 .queryParam("bmonth", searchRequest.getBmonth())
                                 .queryParam("byear", searchRequest.getByear())
