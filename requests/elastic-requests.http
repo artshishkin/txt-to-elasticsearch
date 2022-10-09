@@ -148,3 +148,44 @@ Accept: application/json
   }
 }
 
+### Searching for users that have accounts
+POST http://localhost:9200/warrior-account/_search
+Content-Type: application/json
+Accept: application/json
+
+{
+  "from": 0,
+  "size": 20,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "exists": {
+            "field": "accounts"
+          }
+        }
+      ]
+    }
+  }
+}
+
+### Searching for users that does not have accounts
+POST http://localhost:9200/warrior-account/_search
+Content-Type: application/json
+Accept: application/json
+
+{
+  "from": 0,
+  "size": 20,
+  "query": {
+    "bool": {
+      "must_not": [
+        {
+          "exists": {
+            "field": "accounts"
+          }
+        }
+      ]
+    }
+  }
+}
