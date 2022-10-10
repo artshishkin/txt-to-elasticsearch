@@ -228,4 +228,24 @@ Accept: application/json
   }
 }
 
+### Searching for users with fullName DOES NOT EXACTLY match accounts
+POST http://localhost:9200/warrior-account/_search
+Content-Type: application/json
+Accept: application/json
+
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "script": {
+          "script": {
+            "source": "def fullName = doc['fullName.keyword'].value.toLowerCase(); return (doc['accounts.firstName.keyword'].size() != 0) && !fullName.contains(doc['accounts.firstName.keyword'].value.toLowerCase());"
+          }
+        }
+      }
+    }
+  }
+}
+
+
 
