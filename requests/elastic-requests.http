@@ -189,3 +189,24 @@ Accept: application/json
     }
   }
 }
+
+### Searching for users using script
+POST http://localhost:9200/warrior-account/_search
+Content-Type: application/json
+Accept: application/json
+
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "script": {
+          "script": {
+            "source": "doc['fullName.keyword'].toString().toLowerCase().contains('азамат')"
+          }
+        }
+      }
+    }
+  }
+}
+
+
