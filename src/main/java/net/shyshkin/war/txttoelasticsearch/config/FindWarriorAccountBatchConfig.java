@@ -47,14 +47,17 @@ public class FindWarriorAccountBatchConfig {
     Job findWarriorAccountJob() {
         return jobs.get("Find warrior Account and write it to Elasticsearch")
                 .incrementer(new RunIdIncrementer())
-                .start(readWarriorsFindCityAndAccountAndPopulateToElasticsearch(null, null))
+                .start(readWarriorsFindCityAndAccountAndPopulateToElasticsearch(null, null, null, null))
                 .build();
     }
 
     @Bean
     @JobScope
     Step readWarriorsFindCityAndAccountAndPopulateToElasticsearch(@Value("#{jobParameters['warriorStartIndex']}") Long startIndex,
-                                                                  @Value("#{jobParameters['warriorCount']}") final Long count) {
+                                                                  @Value("#{jobParameters['warriorCount']}") final Long count,
+                                                                  @Value("#{jobParameters['filterWarrior']}") final Boolean toFilter,
+                                                                  @Value("#{jobParameters['filterName']}") final String warriorNameFilter
+    ) {
 
         return steps.get("Find warrior Account and write it to Elasticsearch")
                 .tasklet((contribution, chunkContext) -> {
@@ -62,6 +65,7 @@ public class FindWarriorAccountBatchConfig {
                     var savedCount = warriorRepository.findAll()
                             .skip(startIndex)
                             .take(count)
+                            .filter(doc -> toFilter == null || !toFilter || doc.getFullName().toLowerCase().contains(warriorNameFilter.toLowerCase()))
                             .limitRate(10)
                             .delayElements(Duration.ofMillis(400))
                             .map(warriorMapper::toDocWithAccount)
