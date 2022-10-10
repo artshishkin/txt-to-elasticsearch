@@ -209,4 +209,23 @@ Accept: application/json
   }
 }
 
+### Searching for users with certain accounts.firstName
+POST http://localhost:9200/warrior-account/_search
+Content-Type: application/json
+Accept: application/json
+
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "script": {
+          "script": {
+            "source": "doc['accounts.firstName.keyword'].toString().toLowerCase().contains('алекс')"
+          }
+        }
+      }
+    }
+  }
+}
+
 
