@@ -88,6 +88,12 @@ public class VkApiService implements WebApiService {
                                 .flatMap(Mono::error);
                     return response.bodyToMono(VkBatchSearchUserResponse.class);
                 })
+                .doOnNext(batchSearchUserResponse -> {
+                    if (batchSearchUserResponse.getError() != null)
+                        throw new WebApiServiceException(batchSearchUserResponse.getError().toString());
+                    if (batchSearchUserResponse.getExecuteErrors() != null)
+                        throw new WebApiServiceException(batchSearchUserResponse.getExecuteErrors().toString());
+                })
                 .doOnNext(batchSearchUserResponse -> batchSearchUserResponse
                         .getResponse()
                         .stream()
