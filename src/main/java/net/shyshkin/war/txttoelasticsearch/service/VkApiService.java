@@ -6,13 +6,16 @@ import net.shyshkin.war.txttoelasticsearch.config.data.ApiServiceConfigData;
 import net.shyshkin.war.txttoelasticsearch.dto.SearchRequest;
 import net.shyshkin.war.txttoelasticsearch.exception.WebApiServiceException;
 import net.shyshkin.war.txttoelasticsearch.model.vk.City;
+import net.shyshkin.war.txttoelasticsearch.model.vk.VkBatchSearchUserResponse;
 import net.shyshkin.war.txttoelasticsearch.model.vk.VkUser;
 import net.shyshkin.war.txttoelasticsearch.util.SearchUtil;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Slf4j
@@ -20,6 +23,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class VkApiService implements WebApiService {
 
+    public static final ParameterizedTypeReference<List<VkBatchSearchUserResponse>> BATCH_SEARCH_USER_RESPONSE = new ParameterizedTypeReference<>() {
+    };
     private final WebClient webClient;
     private final ApiServiceConfigData configData;
 
@@ -66,5 +71,28 @@ public class VkApiService implements WebApiService {
                     return response.bodyToFlux(VkUser.class);
                 })
                 .doOnNext(user -> log.debug("Found {} for {}", user, searchRequest));
+    }
+
+    @Override
+    public Mono<VkBatchSearchUserResponse> searchUsers(List<SearchRequest> searchRequests) {
+        return webClient
+                .post().uri(configData.getSearchEndpoint())
+                .bodyValue(searchRequests)
+                .accept(configData.getAcceptType())
+                .exchangeToMono(response -> {
+                    log.debug("Status code: {}", response.statusCode());
+                    log.debug("Headers: {}", response.headers().asHttpHeaders());
+                    if (!response.statusCode().is2xxSuccessful())
+                        return response.bodyToMono(String.class)
+                                .map(WebApiServiceException::new)
+                                .flatMap(Mono::error);
+                    return response.bodyToMono(VkBatchSearchUserResponse.class);
+                })
+                .doOnNext(batchSearchUserResponse -> batchSearchUserResponse
+                        .getResponse()
+                        .stream()
+                        .filter(resp -> resp.getCount() > 0)
+                        .forEach(resp -> log.debug("Found {} ", resp.getItems()))
+                );
     }
 }
