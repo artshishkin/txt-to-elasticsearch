@@ -59,7 +59,16 @@ Importing Orks' mobilization data published by [Anonymous TV](https://twitter.co
    - `mvn clean package`
 3. Run mobilization import job to Elasticsearch
    - from folder `target` run
-   - `java -jar txt-to-elasticsearch-0.0.1-SNAPSHOT.jar --spring.profiles.active=webservice-to-elasticsearch
+   - `java -jar txt-to-elasticsearch-0.0.1-SNAPSHOT.jar --spring.profiles.active=webservice-to-elasticsearch`
+
+#### Fixing Error during Start of elastic search with docker in Windows
+
+- In case of error in Windows
+   - `max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]`
+   - use commands for Windows
+   - `wsl -d docker-desktop`
+   - `sysctl -w vm.max_map_count=262144`
+   - or permanently add `vm.max_map_count = 262144` to __/etc/sysctl.conf__
 
 
 [springver]: https://img.shields.io/badge/dynamic/xml?label=Spring%20Boot&query=%2F%2A%5Blocal-name%28%29%3D%27project%27%5D%2F%2A%5Blocal-name%28%29%3D%27parent%27%5D%2F%2A%5Blocal-name%28%29%3D%27version%27%5D&url=https%3A%2F%2Fraw.githubusercontent.com%2Fartshishkin%2Ftxt-to-elasticsearch%2Fmaster%2Fpom.xml&logo=Spring&labelColor=white&color=grey
